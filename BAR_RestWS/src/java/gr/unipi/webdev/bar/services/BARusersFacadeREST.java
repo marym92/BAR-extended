@@ -6,6 +6,7 @@
 package gr.unipi.webdev.bar.services;
 
 import gr.unipi.webdev.bar.entities.*;
+
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
@@ -41,6 +42,7 @@ public class BARusersFacadeREST extends AbstractFacade<BARusers> {
     @EJB
     private BARloginAttemptsFacadeREST laFacadeREST;
     private BARactiveUsersFacadeREST auFacadeREST;
+    private BARcaptchaFacadeREST cFacadeREST;
     
     @PersistenceContext(unitName = "BAR_RestWSPU")
     private EntityManager em;
@@ -141,6 +143,11 @@ public class BARusersFacadeREST extends AbstractFacade<BARusers> {
             Random rnd = new Random(System.nanoTime());
             int userBarId;
             
+            /**
+             * At this point, coordinator will check if systemNo and clusterNo exist, based on
+             * system parameters. Then, coordinator choose a random userBarId that is available
+             * on given serverNo.
+            */
             do {
                 userBarId = rnd.nextInt(999999) + 1;
             } while (auFacadeREST.getActiveUserBarId().contains(userBarId));
@@ -182,6 +189,11 @@ public class BARusersFacadeREST extends AbstractFacade<BARusers> {
         
         if (!checkMail(sd.email)) {
             result = "-202";
+            return result;
+        }
+        
+        if (!checkCaptcha(sd.captcha)) {
+            result = "-207";
             return result;
         }
         
@@ -247,6 +259,20 @@ public class BARusersFacadeREST extends AbstractFacade<BARusers> {
         Matcher matcher = pattern.matcher(email);
         verified = matcher.find();
         
+        return verified;
+    }
+    
+    private boolean checkCaptcha(BARcaptcha captcha) {
+        boolean verified = false;
+        
+        if (captcha.getCaptcha() == 0)
+            return verified;
+        
+        BARcaptcha c = (BARcaptcha) cFacadeREST.find(captcha.getCID());
+        if (captcha.getCaptcha() != c.getCaptcha())
+            return verified;
+        
+        verified = true;
         return verified;
     }
     

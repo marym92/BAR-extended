@@ -30,9 +30,11 @@ public class ApplicationConfig extends Application {
      */
     private void addRestResourceClasses(Set<Class<?>> resources) {
         resources.add(gr.unipi.webdev.bar.services.BARactiveUsersFacadeREST.class);
+        resources.add(gr.unipi.webdev.bar.services.BARcaptchaFacadeREST.class);
         resources.add(gr.unipi.webdev.bar.services.BARcontactsFacadeREST.class);
         resources.add(gr.unipi.webdev.bar.services.BARloginAttemptsFacadeREST.class);
         resources.add(gr.unipi.webdev.bar.services.BARnymUsersFacadeREST.class);
+        resources.add(gr.unipi.webdev.bar.services.BARsystemParamsFacadeREST.class);
         resources.add(gr.unipi.webdev.bar.services.BARusersFacadeREST.class);
     }
     

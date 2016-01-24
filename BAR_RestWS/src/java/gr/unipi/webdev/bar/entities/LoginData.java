@@ -22,4 +22,8 @@ public class LoginData {
     public String bridgedPk;
     @XmlElement(name="ip")
     public String ip;
+    @XmlElement(name="serverNo")
+    public String serverNo;
+    @XmlElement(name="clusterNo")
+    public String clusterNo;
 }

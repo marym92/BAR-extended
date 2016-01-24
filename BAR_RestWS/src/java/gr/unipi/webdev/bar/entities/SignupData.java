@@ -5,7 +5,6 @@
  */
 package gr.unipi.webdev.bar.entities;
 
-import java.util.Date;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -25,6 +24,6 @@ public class SignupData {
     public String email;
     @XmlElement(name="birthdate")
     public String birthdate;
-    //@XmlElement(name="captcha")
-    //public String captcha;
+    @XmlElement(name="captcha")
+    public BARcaptcha captcha;
 }

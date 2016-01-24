@@ -7,7 +7,6 @@ package gr.unipi.webdev.bar.services;
 
 import gr.unipi.webdev.bar.entities.BARcontacts;
 import gr.unipi.webdev.bar.entities.BARcontactsPK;
-import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
