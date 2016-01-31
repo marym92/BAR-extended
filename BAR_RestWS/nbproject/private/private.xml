@@ -2,6 +2,11 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group/>
+        <group>
+            <file>file:/Users/mary/Documents/git_workspace/BAR-extended/BAR_RestWS/src/java/gr/unipi/webdev/bar/entities/BarSignupData.java</file>
+            <file>file:/Users/mary/Documents/git_workspace/BAR-extended/BAR_RestWS/src/java/gr/unipi/webdev/bar/services/BARnymUsersFacadeREST.java</file>
+            <file>file:/Users/mary/Documents/git_workspace/BAR-extended/BAR_RestWS/src/java/gr/unipi/webdev/bar/services/BARusersFacadeREST.java</file>
+            <file>file:/Users/mary/Documents/git_workspace/BAR-extended/BAR_RestWS/src/java/gr/unipi/webdev/bar/services/BARactiveUsersFacadeREST.java</file>
+        </group>
     </open-files>
 </project-private>

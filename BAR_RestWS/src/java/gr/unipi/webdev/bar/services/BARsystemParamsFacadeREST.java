@@ -6,9 +6,7 @@
 package gr.unipi.webdev.bar.services;
 
 import gr.unipi.webdev.bar.entities.BARsystemParams;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -83,15 +81,6 @@ public class BARsystemParamsFacadeREST extends AbstractFacade<BARsystemParams> {
     @Produces(MediaType.TEXT_PLAIN)
     public String countREST() {
         return String.valueOf(super.count());
-    }
-    
-    @GET
-    @Path("/getSystemParameters")
-    @Produces({"application/json"})
-    public List<BARsystemParams> getSystemParameters() {
-        List<BARsystemParams> sp = super.findAll();
-       
-        return sp;
     }
 
     @Override

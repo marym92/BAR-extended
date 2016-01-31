@@ -10,6 +10,7 @@ import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -28,8 +29,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "BARnymUsers.findAll", query = "SELECT b FROM BARnymUsers b"),
     @NamedQuery(name = "BARnymUsers.findByUserID", query = "SELECT b FROM BARnymUsers b WHERE b.userID = :userID"),
     @NamedQuery(name = "BARnymUsers.findByPseudonym", query = "SELECT b FROM BARnymUsers b WHERE b.pseudonym = :pseudonym"),
-    @NamedQuery(name = "BARnymUsers.findByPk", query = "SELECT b FROM BARnymUsers b WHERE b.pk = :pk"),
-    @NamedQuery(name = "BARnymUsers.findBySig", query = "SELECT b FROM BARnymUsers b WHERE b.sig = :sig")})
+    @NamedQuery(name = "BARnymUsers.findByPk", query = "SELECT b FROM BARnymUsers b WHERE b.pk = :pk")})
 public class BARnymUsers implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -40,19 +40,19 @@ public class BARnymUsers implements Serializable {
     private Integer userID;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 10)
+    @Size(min = 1, max = 20)
     @Column(name = "pseudonym")
     private String pseudonym;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 128)
+    @Size(min = 1, max = 255)
     @Column(name = "pk")
     private String pk;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 128)
+    @Lob
     @Column(name = "sig")
-    private String sig;
+    private byte[] sig;
 
     public BARnymUsers() {
     }
@@ -61,7 +61,7 @@ public class BARnymUsers implements Serializable {
         this.userID = userID;
     }
 
-    public BARnymUsers(Integer userID, String pseudonym, String pk, String sig) {
+    public BARnymUsers(Integer userID, String pseudonym, String pk, byte[] sig) {
         this.userID = userID;
         this.pseudonym = pseudonym;
         this.pk = pk;
@@ -92,11 +92,11 @@ public class BARnymUsers implements Serializable {
         this.pk = pk;
     }
 
-    public String getSig() {
+    public byte[] getSig() {
         return sig;
     }
 
-    public void setSig(String sig) {
+    public void setSig(byte[] sig) {
         this.sig = sig;
     }
 

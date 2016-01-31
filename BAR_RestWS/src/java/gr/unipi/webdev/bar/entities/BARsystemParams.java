@@ -39,8 +39,9 @@ public class BARsystemParams implements Serializable {
     private String type;
     @Basic(optional = false)
     @NotNull
+    @Size(min = 1, max = 128)
     @Column(name = "param")
-    private int param;
+    private String param;
 
     public BARsystemParams() {
     }
@@ -49,7 +50,7 @@ public class BARsystemParams implements Serializable {
         this.type = type;
     }
 
-    public BARsystemParams(String type, int param) {
+    public BARsystemParams(String type, String param) {
         this.type = type;
         this.param = param;
     }
@@ -62,11 +63,11 @@ public class BARsystemParams implements Serializable {
         this.type = type;
     }
 
-    public int getParam() {
+    public String getParam() {
         return param;
     }
 
-    public void setParam(int param) {
+    public void setParam(String param) {
         this.param = param;
     }
 

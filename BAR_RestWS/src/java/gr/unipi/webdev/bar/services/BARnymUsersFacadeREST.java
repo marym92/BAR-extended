@@ -6,7 +6,16 @@
 package gr.unipi.webdev.bar.services;
 
 import gr.unipi.webdev.bar.entities.BARnymUsers;
+import gr.unipi.webdev.bar.entities.BarSignupData;
+import static gr.unipi.webdev.bar.security.CoordinatorKeys.getCoordiPK;
+import static gr.unipi.webdev.bar.security.CoordinatorKeys.getCoordiSK;
+import java.security.MessageDigest;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.SecureRandom;
+import java.security.Signature;
 import java.util.List;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -19,6 +28,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.xml.bind.DatatypeConverter;
 
 /**
  *
@@ -28,6 +38,11 @@ import javax.ws.rs.core.MediaType;
 @Path("gr.unipi.webdev.bar.entities.barnymusers")
 public class BARnymUsersFacadeREST extends AbstractFacade<BARnymUsers> {
 
+    private static String signAlgo = "SHA256withRSA";
+    
+    @EJB
+    private BARusersFacadeREST uFacadeREST;
+    
     @PersistenceContext(unitName = "BAR_RestWSPU")
     private EntityManager em;
 
@@ -82,10 +97,109 @@ public class BARnymUsersFacadeREST extends AbstractFacade<BARnymUsers> {
     public String countREST() {
         return String.valueOf(super.count());
     }
+    
+    @POST
+    @Path("/register-bar")
+    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({MediaType.APPLICATION_JSON})
+    public String registerBar(BarSignupData bsd) throws Exception {
+        String result = "-1";
+        
+        int userID = Integer.parseInt(bsd.userID);
+        if (uFacadeREST.find(userID) == null) {
+            result = "-503";
+            return result;
+        }
+        
+        List<BARnymUsers> nymUsers = super.findAll();
+        
+        for (BARnymUsers u:nymUsers) {
+            if (u.getPseudonym().equalsIgnoreCase(bsd.pseudonym)) {
+                result = "-501"; // pseudonym exists
+                return result;
+            }
+            if (u.getPk().equalsIgnoreCase(bsd.pk)) {
+                result = "-502"; // pk exists
+                return result;
+            }
+        }
+        
+        byte[] sig = signData(bsd.pseudonym, bsd.pk);
+        
+        BARnymUsers nymUser = new BARnymUsers(userID, bsd.pseudonym, bsd.pk, sig);
+        create(nymUser);
+         
+        result = "0";
+        return result;
+    }
+    
+    @GET
+    @Path("/verify-sign/{userID}")
+    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({MediaType.APPLICATION_JSON})
+    public String verifySign(@PathParam("userID") Integer id) throws Exception {
+        String result = "-1";
+        
+        if (uFacadeREST.find(id) == null) {
+            result = "-503";
+            return result;
+        }
+        
+        BARnymUsers nymUser = super.find(id);
+        PublicKey publicKey = getCoordiPK();
+        
+        // Verifying the Signature
+        Signature myVerifySign = Signature.getInstance(signAlgo);
+        myVerifySign.initVerify(publicKey);
+        
+        // Get hash function of data
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
+        String data = nymUser.getPseudonym() + "-" + nymUser.getPk();
+
+        md.update(data.getBytes("UTF-8"));
+        byte[] digest = md.digest();
+        
+        myVerifySign.update(digest);
+
+        boolean verifySign = myVerifySign.verify(nymUser.getSig());
+        if (verifySign == false) {
+            System.out.println(" Error in validating Signature ");
+            result = "-800";
+            return result;
+        }
+        else
+            System.out.println(" Successfully validated Signature ");
+        
+        result = "0";
+        return result;
+    }
 
     @Override
     protected EntityManager getEntityManager() {
         return em;
+    }
+    
+    private byte[] signData(String pseudonym, String pk) throws Exception {
+        PrivateKey privateKey = getCoordiSK();
+       
+        // initialize the signature with signature algorithm and private key 
+        Signature signature = Signature.getInstance(signAlgo);
+        signature.initSign(privateKey, new SecureRandom());
+       
+        // Get hash function of data
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
+        String data = pseudonym + "-" + pk;
+
+        md.update(data.getBytes("UTF-8"));
+        byte[] digest = md.digest();
+       
+        // update signature with data to be signed 
+        signature.update(digest);
+       
+        // sign the data
+        byte[] signBytes = signature.sign();
+       
+        return signBytes;
     }
     
 }

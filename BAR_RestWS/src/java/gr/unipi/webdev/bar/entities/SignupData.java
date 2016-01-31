@@ -12,6 +12,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  *
  * @author mary
  */
+
 @XmlRootElement
 public class SignupData {
     @XmlElement(name="username")

@@ -6,8 +6,10 @@
 package gr.unipi.webdev.bar.services;
 
 import gr.unipi.webdev.bar.entities.*;
+import static gr.unipi.webdev.bar.security.CoordinatorKeys.getCoordiPK;
 
 import java.security.MessageDigest;
+import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -237,8 +239,20 @@ public class BARusersFacadeREST extends AbstractFacade<BARusers> {
         BARusers user = new BARusers(sd.username, encrPass, encrSalt, sd.email, dateObj, false);
         create(user);
          
-        result = "0";
+        int userID = findByUsername(sd.username).getUserID();
+        
+        result = "" + userID;
         return result;
+    }
+    
+    @GET
+    @Path("/getCoordiKey")
+    @Produces({"application/json"})
+    public String getCoordiKey() throws Exception {
+        PublicKey pubKey = getCoordiPK();
+        String pubString = DatatypeConverter.printBase64Binary(pubKey.getEncoded());
+        
+        return pubString;
     }
     
     @Override
