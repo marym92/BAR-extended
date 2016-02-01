@@ -7,7 +7,10 @@ package gr.unipi.webdev.bar.services;
 
 import gr.unipi.webdev.bar.entities.BARcontacts;
 import gr.unipi.webdev.bar.entities.BARcontactsPK;
+import gr.unipi.webdev.bar.entities.BARnymUsers;
+import gr.unipi.webdev.bar.entities.ContactsPairingData;
 import java.util.List;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -30,6 +33,9 @@ import javax.ws.rs.core.PathSegment;
 @Path("gr.unipi.webdev.bar.entities.barcontacts")
 public class BARcontactsFacadeREST extends AbstractFacade<BARcontacts> {
 
+    @EJB
+    private BARnymUsersFacadeREST nuFacadeREST;
+    
     @PersistenceContext(unitName = "BAR_RestWSPU")
     private EntityManager em;
 
@@ -115,6 +121,30 @@ public class BARcontactsFacadeREST extends AbstractFacade<BARcontacts> {
         List<BARcontacts> allcontacts = super.findAll();
        
         return allcontacts;
+    }
+    
+    @POST
+    @Path("/addToContacts")
+    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({MediaType.APPLICATION_JSON})
+    public String addToContacts(ContactsPairingData cpd) throws Exception {
+        String result = "-1";
+        
+        List<BARnymUsers> nymusers = nuFacadeREST.findAll();
+
+        for (BARnymUsers u:nymusers) {
+            if (u.getPseudonym().equals(cpd.pseudonym)) {
+                BARcontacts c = new BARcontacts(cpd.pseudonym, cpd.data);
+                create(c);
+
+                result = "0";
+                return result;
+            }
+            
+        }
+        
+        result = "-601";
+        return result;
     }
 
     @Override
