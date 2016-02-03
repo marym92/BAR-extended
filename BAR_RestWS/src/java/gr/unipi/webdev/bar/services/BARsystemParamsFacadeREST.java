@@ -82,6 +82,15 @@ public class BARsystemParamsFacadeREST extends AbstractFacade<BARsystemParams> {
     public String countREST() {
         return String.valueOf(super.count());
     }
+    
+    @GET
+    @Path("/getSystemParameters")
+    @Produces({"application/json"})
+    public List<BARsystemParams> getSystemParameters() {
+        List<BARsystemParams> sp = super.findAll();
+    
+        return sp;
+    }
 
     @Override
     protected EntityManager getEntityManager() {
