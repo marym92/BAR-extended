@@ -1,0 +1,8 @@
+<#if licenseFirst??> 
+${licenseFirst} 
+</#if> 
+${licensePrefix}Copyright (C) 2016, BAR protocol.  All rights reserved. 
+${licensePrefix}Mary M. — University of Piraeus
+<#if licenseLast??> 
+${licenseLast} 
+</#if>
