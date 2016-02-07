@@ -279,11 +279,11 @@ public class BARusersFacadeREST extends AbstractFacade<BARusers> {
     private boolean checkCaptcha(BARcaptcha captcha) {
         boolean verified = false;
         
-        if (captcha.getCaptcha() == 0)
+        if (captcha.getCaptcha().equals("0"))
             return verified;
         
         BARcaptcha c = (BARcaptcha) cFacadeREST.find(captcha.getCID());
-        if (captcha.getCaptcha() != c.getCaptcha())
+        if (!captcha.getCaptcha().equals(c.getCaptcha()))
             return verified;
         
         verified = true;

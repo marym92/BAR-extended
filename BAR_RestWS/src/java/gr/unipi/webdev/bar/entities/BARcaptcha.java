@@ -16,6 +16,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -39,8 +40,9 @@ public class BARcaptcha implements Serializable {
     private Integer cID;
     @Basic(optional = false)
     @NotNull
+    @Size(min = 1, max = 6)
     @Column(name = "captcha")
-    private int captcha;
+    private String captcha;
 
     public BARcaptcha() {
     }
@@ -49,7 +51,7 @@ public class BARcaptcha implements Serializable {
         this.cID = cID;
     }
 
-    public BARcaptcha(Integer cID, int captcha) {
+    public BARcaptcha(Integer cID, String captcha) {
         this.cID = cID;
         this.captcha = captcha;
     }
@@ -62,11 +64,11 @@ public class BARcaptcha implements Serializable {
         this.cID = cID;
     }
 
-    public int getCaptcha() {
+    public String getCaptcha() {
         return captcha;
     }
 
-    public void setCaptcha(int captcha) {
+    public void setCaptcha(String captcha) {
         this.captcha = captcha;
     }
 
