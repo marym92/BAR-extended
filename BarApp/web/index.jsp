@@ -27,21 +27,21 @@
 	<div id="footer">
 		<ul id="featured" class="wrapper clearfix">
 			<li>
-				<img src="images/login_icon.png" alt="Img" height="204" width="220">
-				<h3><a href="login.jsp">Login Now!</a></h3>
-				<p>
-					You know what to do! Let's become anonymous...
-				</p>
+                            <img src="images/login_icon.png" alt="Img" height="204" width="220">
+                            <h3><a href="login.jsp">Login Now!</a></h3>
+                            <p>
+                                    You know what to do! Let's become anonymous...
+                            </p>
 			</li>
                         <li>
 				
 			</li>
 			<li>
-				<img src="images/register_icon.jpg" alt="Img" height="204" width="220">
-				<h3><a href="signup.jsp">New to BAR? Register Now!</a></h3>
-				<p>
-					Join now the BAR network and let us lead your way to anonymity!
-				</p>
+                            <img src="images/register_icon.jpg" alt="Img" height="204" width="220">
+                            <h3><a href="signup.jsp">New to BAR? Register Now!</a></h3>
+                            <p>
+                                    Join now the BAR network and let us lead your way to anonymity!
+                            </p>
 			</li>
 		</ul>
 		

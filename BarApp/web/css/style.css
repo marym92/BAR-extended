@@ -1,8 +1,14 @@
-/* Website template by freewebsitetemplates.com */
 @font-face {
 	font-family: 'PTSerif-Caption';
 	src: url('../fonts/PT_Serif-Caption-Web-Regular.eot');
 	src: local('☺'), url('../fonts/PT_Serif-Caption-Web-Regular.woff') format('woff'), url('../fonts/PT_Serif-Caption-Web-Regular.ttf') format('truetype'), url('../fonts/PT_Serif-Caption-Web-Regular.svg') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+@font-face {
+	font-family: 'Porkys-Regular';
+	src: url('../fonts/Porkys-Regular.eot');
+	src: local('☺'), url('../fonts/Porkys-Regular.woff') format('woff'), url('../fonts/Porkys-Regular.ttf') format('truetype'), url('../fonts/Porkys-Regular.svg') format('svg');
 	font-weight: normal;
 	font-style: normal;
 }
@@ -28,7 +34,7 @@ img {
 	visibility:hidden;
 }
 /*------------------------------ HEADER ------------------------------*/
-.btn1, .btn2, .btn3, #newsletter input {
+.btn1, .btn2, .btn3, .btn4, #newsletter input {
 	background: url(../images/interface.png) no-repeat;
 }
 .btn1, .btn2, .btn3 {
@@ -61,6 +67,19 @@ img {
 	height: 49px;
 	width: 222px;
 }
+.btn4 {
+	background-position: -317px -168px;
+	height: 35px;
+	line-height: 35px;
+	width: 80px;
+	padding: 0 3px 9px;
+        color: #fdfdfd;
+	display: inline-block;
+	font-size: 12px;
+	text-align: center;
+	text-decoration: none;
+	text-shadow: -3px 0 3px #053131;
+}
 .btn1:hover {
 	background-position: -222px 0;
 }
@@ -69,6 +88,9 @@ img {
 }
 .btn3:hover {
 	background-position: -232px -108px;
+}
+.btn4:hover {
+	background-position: -428px -168px;
 }
 /*------------------------------ HEADER ------------------------------*/
 #header {
@@ -408,7 +430,7 @@ img {
 	font: 12px Arial, Helvetica, sans-serif;
 	font-weight: normal;
 }
-#login input[type='text'], #login input[type='password'], #login input[type='email'] {
+#login input[type='text'], #login input[type='password'], #login input[type='email'], #login input[type='date'] {
 	background-color: #fff;
 	color: #060606;
 	font: 14px/36px Arial, Helvetica, sans-serif;
@@ -425,6 +447,11 @@ img {
 	margin-top: 20px;
         margin-bottom: 70px;
 	margin-right: 100px;
+}
+#login input[type='button'] {
+	cursor: pointer;
+	border: 0;
+	margin-left: 20px;
 }
 #login a {
         cursor: pointer;

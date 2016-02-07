@@ -21,13 +21,13 @@ import org.json.JSONObject;
  */
 public class WS_SystemParams {
     
-    private static final String spURL = "http://83.212.114.35:8080/BAR_RestWS/webresources/gr.unipi.webdev.bar.entities.barsystemparams/getSystemParameters";
+    private static final String spURL = "http://83.212.114.35:8080/BAR_RestWS/webresources/gr.unipi.webdev.bar.entities.barsystemparams";
     
     public static ArrayList<BARsystemParams> getSystemParams() {
         ArrayList<BARsystemParams> sp = new ArrayList<>();
         
         try {
-            URL url = new URL(spURL);
+            URL url = new URL(spURL + "/getSystemParameters");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept", "application/json");
