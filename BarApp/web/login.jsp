@@ -111,7 +111,11 @@
                             <script language="javascript">
                                 alert("Both Username and Password must not be Null.\nPlease try again!");
                             </script>
-                    <%  }
+                    <%  } %>
+                        <script language="javascript">
+                            alert("Both Username and Password must not be Null.\nPlease try again!");
+                        </script>
+                    <%
                     }   
                     %>
                     

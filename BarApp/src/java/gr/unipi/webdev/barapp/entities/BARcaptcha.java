@@ -12,6 +12,14 @@ public class BARcaptcha {
     private int cID;
     private String captcha;
 
+    public BARcaptcha() {
+    }
+    
+    public BARcaptcha(int cID, String captcha) {
+        this.cID = cID;
+        this.captcha = captcha;
+    }
+    
     public int getcID() {
         return cID;
     }

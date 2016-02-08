@@ -5,6 +5,7 @@
 package gr.unipi.webdev.barapp.control;
 
 import gr.unipi.webdev.barapp.entities.LoginData;
+import gr.unipi.webdev.barapp.entities.SignupData;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -39,9 +40,58 @@ public class WS_Users {
             jsonObject.accumulate("username", ld.getUsername());
             jsonObject.accumulate("password", ld.getPassword());
             jsonObject.accumulate("bridgedPk", ld.getBridgedPk());
-            jsonObject.accumulate("ip", ld.getUsername());
+            jsonObject.accumulate("ip", ld.getIp());
             jsonObject.accumulate("serverNo", ld.getServerNo());
             jsonObject.accumulate("clusterNo", ld.getClusterNo());
+            
+            // convert JSONObject to JSON to String
+            json = jsonObject.toString();
+            
+            OutputStream os = conn.getOutputStream();
+            os.write(json.getBytes());
+            os.flush();
+            
+            if (conn.getResponseCode() != HttpURLConnection.HTTP_CREATED) {
+                throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
+            }
+            
+            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            
+            String line;
+            
+            while ((line = br.readLine()) != null) {
+                result += line;
+            }
+            
+            conn.disconnect();
+            
+        } catch (Exception ex) {
+            Logger.getLogger(WS_Users.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return result;
+    }
+    
+    public static String signup(SignupData sd) {
+        String result = "";
+        
+        try {
+            URL url = new URL(usersURL + "/register");
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setDoOutput(true);
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Accept", "application/json");
+            
+            // Create JSON object
+            String json = "";
+ 
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.accumulate("username", sd.getUsername());
+            jsonObject.accumulate("password", sd.getPassword());
+            jsonObject.accumulate("passwordVer", sd.getPasswordVer());
+            jsonObject.accumulate("email", sd.getEmail());
+            jsonObject.accumulate("birthdate", sd.getBirthdate());
+            jsonObject.accumulate("captcha", sd.getCaptcha());
             
             // convert JSONObject to JSON to String
             json = jsonObject.toString();

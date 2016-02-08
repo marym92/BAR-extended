@@ -3,9 +3,15 @@
     Author     : mary
 --%>
 
+<%@page import="gr.unipi.webdev.barapp.control.WS_Users"%>
+<%@page import="gr.unipi.webdev.barapp.entities.SignupData"%>
 <%@page import="gr.unipi.webdev.barapp.control.WS_Captcha"%>
 <%@page import="gr.unipi.webdev.barapp.entities.BARcaptcha"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+
+<%!
+    private static BARcaptcha c;
+%>
 
 <%
     // Page Value -- signup=3
@@ -33,7 +39,8 @@
                     x.value=x.defaultValue;
                 }
             }
-
+            
+            // Checks for passwords
             function checkPasswords(id){
                 var pass = document.getElementById("password").value;
                 var repass = document.getElementById("repassword").value;
@@ -55,10 +62,11 @@
                     return false;
                 }
             }
-
+            
+            // Checks for Captcha code
             function Captcha(){
                 <%
-                BARcaptcha c = new BARcaptcha();
+                c = new BARcaptcha();
                 c = WS_Captcha.getCaptcha();
                 %>
 
@@ -97,9 +105,10 @@
                     alert("Captcha is incorrect. Please try again!");
                 }
             }
-
+            
+            // Checks for birthdate
             function dateInput(){
-                var text = document.getElementById("birthday").value;
+                var text = document.getElementById("birthdate").value;
                 var comp = text.split('/');
                 var d = parseInt(comp[0], 10);
                 var m = parseInt(comp[1], 10);
@@ -112,7 +121,7 @@
                 }
             }
             function dateResult(id) {
-                var c = document.getElementById("birthday");
+                var c = document.getElementById("birthdate");
 
                 if(c.value=='') {
                     return check_empty_fields(id);
@@ -132,10 +141,68 @@
             </div>
             <div id="footer">
                 <div id="login" class="wrapper clearfix">
+                    
+                    <%
+                    if (request.getParameter("username")!=null && request.getParameter("password")!=null && request.getParameter("repassword")!=null && request.getParameter("email")!=null && request.getParameter("birthdate")!=null && request.getParameter("txtInput")!=null) {
+                        if (!request.getParameter("username").equalsIgnoreCase("Username") && !request.getParameter("password").equalsIgnoreCase("Password") && !request.getParameter("repassword").equalsIgnoreCase("Password") && !request.getParameter("email").equalsIgnoreCase("Email") && !request.getParameter("birthdate").equalsIgnoreCase("dd/mm/yyyy") && !request.getParameter("txtInput").equalsIgnoreCase("")) {
+                            SignupData sd = new SignupData();
+                            
+                            sd.setUsername(request.getParameter("username").toString());
+                            sd.setPassword(request.getParameter("password").toString());
+                            sd.setPasswordVer(request.getParameter("repassword").toString());
+                            sd.setEmail(request.getParameter("email").toString());
+                            sd.setBirthdate(request.getParameter("birthdate").toString());
+                            sd.setCaptcha(new BARcaptcha(c.getcID(), request.getParameter("txtInput").toString()));
+
+                            /* ----- WS -- Send Signup Data ----- */
+                            String result = WS_Users.signup(sd);
+                            
+                            if (Integer.parseInt(result) > 0) {
+                                session.setAttribute("userID", Integer.parseInt(result));
+                                response.sendRedirect("account.jsp");
+                            } 
+                            else if (result.equals("-201")) { %>
+                                <script language="javascript">
+                                    alert("The two passwords don't match.\nPlease check your credentials and try again!");
+                                </script>
+                            <%
+                            } else if (result.equals("-202")) { %>
+                                <script language="javascript">
+                                    alert("The email address that you provided is incorrect. Please check the email provided and try again!");
+                                </script>
+                            <%
+                            } else if (result.equals("-203") || result.equals("-204")) { %>
+                                <script language="javascript">
+                                    alert("Username and/or email already exist. Please check your credentials and try again!");
+                                </script>
+                            <%
+                            } else if (result.equals("-205") || result.equals("-206")) { %>
+                                <script language="javascript">
+                                    alert("The birth date you provided is incorrect. Please try again!");
+                                </script>
+                            <%
+                            } else if (result.equals("-207")) { %>
+                                <script language="javascript">
+                                    alert("The captcha code you entered is incorrect. Please try again!");
+                                </script>
+                            <% }
+                        }
+                        else { %>
+                            <script language="javascript">
+                                alert("All info must be provided.\nPlease try again!");
+                            </script>
+                    <%  } %>
+                        <script language="javascript">
+                            alert("All info must be provided.\nPlease try again!");
+                        </script>
+                    <%
+                    }   
+                    %>
+                    
                     <div class="main">
                         <h1>Sign Up</h1>
 
-                        <form action="index12314.html" method="post">
+                        <form action="signup.jsp" method="post">
                             <ul>
                                 <li>
                                     <label>Enter your username.</label>
@@ -155,16 +222,16 @@
                                 </li>
                                 <li>
                                     <label>Enter your date of birth.</label>
-                                    <input type="date" value="dd/mm/yyyy" name="birthday" id="birthday" onBlur="javascript:dateResult()" onFocus="javascript:if(this.value==this.defaultValue){this.value='';}">
+                                    <input type="text" value="dd/mm/yyyy" name="birthdate" id="birthdate" onBlur="javascript:dateResult(this.id)" onFocus="javascript:if(this.value==this.defaultValue){this.value='';}">
                                 </li>
                                 <li>
-                                    <label>Prove you are a human.</label>
+                                    <label>Prove you are human.</label>
                                     <input type="text" readonly id="mainCaptcha" />
                                     <br/>
-                                    <input type="text" id="txtInput" onBlur="javascript:captchaInput(this.id);"/>
+                                    <input type="text" name="txtInput" id="txtInput" onBlur="javascript:captchaInput(this.id);"/>
                                 </li>
                                 <li>
-                                    <a href="login.jsp">Having already an account? Login!</a>
+                                    <a href="login.jsp">Already having an account? Login!</a>
                                 </li>
                                 <li>
                                     <input type="submit" value="Sign Up" class="btn3">
