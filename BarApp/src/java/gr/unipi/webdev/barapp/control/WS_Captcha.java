@@ -43,7 +43,7 @@ public class WS_Captcha {
                 bufferString += line;
             }
             
-            // convert string to JSONArray
+            // convert string to JSONObject
             JSONObject jsonCaptcha = new JSONObject(bufferString);
             
             captcha.setcID(jsonCaptcha.getInt("CID"));

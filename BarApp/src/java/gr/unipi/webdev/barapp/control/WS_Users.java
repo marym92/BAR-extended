@@ -11,6 +11,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.JSONObject;
@@ -52,7 +54,8 @@ public class WS_Users {
             os.flush();
             
             if (conn.getResponseCode() != HttpURLConnection.HTTP_CREATED) {
-                throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
+                result = "-102";
+                return result;
             }
             
             BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -75,46 +78,63 @@ public class WS_Users {
     public static String signup(SignupData sd) {
         String result = "";
         
+        String reformDate;
+        SimpleDateFormat oldFormat = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat newFormat = new SimpleDateFormat("yyyy-MM-dd");
+        
         try {
-            URL url = new URL(usersURL + "/register");
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setDoOutput(true);
-            conn.setRequestMethod("POST");
-            conn.setRequestProperty("Accept", "application/json");
+            reformDate = newFormat.format(oldFormat.parse(sd.birthdate));
             
-            // Create JSON object
-            String json = "";
- 
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.accumulate("username", sd.getUsername());
-            jsonObject.accumulate("password", sd.getPassword());
-            jsonObject.accumulate("passwordVer", sd.getPasswordVer());
-            jsonObject.accumulate("email", sd.getEmail());
-            jsonObject.accumulate("birthdate", sd.getBirthdate());
-            jsonObject.accumulate("captcha", sd.getCaptcha());
-            
-            // convert JSONObject to JSON to String
-            json = jsonObject.toString();
-            
-            OutputStream os = conn.getOutputStream();
-            os.write(json.getBytes());
-            os.flush();
-            
-            if (conn.getResponseCode() != HttpURLConnection.HTTP_CREATED) {
-                throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
+            try {
+                URL url = new URL(usersURL + "/register");
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setDoOutput(true);
+                conn.setRequestMethod("POST");
+                conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+                conn.setRequestProperty("Accept", "application/json");
+
+                // Create JSON object
+                String json = "";
+
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.accumulate("username", sd.getUsername());
+                jsonObject.accumulate("password", sd.getPassword());
+                jsonObject.accumulate("passwordVer", sd.getPasswordVer());
+                jsonObject.accumulate("email", sd.getEmail());
+                jsonObject.accumulate("birthdate", reformDate);
+                jsonObject.accumulate("cID", "" + sd.getCaptcha().getcID());
+                jsonObject.accumulate("captcha", sd.getCaptcha().getCaptcha());
+
+                // convert JSONObject to JSON to String
+                json = jsonObject.toString();
+
+                OutputStream os = conn.getOutputStream();
+                os.write(json.getBytes());
+                os.flush();
+
+                if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                    result = "-208";
+                    return result;
+                }
+
+                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+
+                String line = "";
+                String bufferString = "";
+
+                while ((line = br.readLine()) != null) {
+                    bufferString += line;
+                }
+                
+                // convert string to JSONObject
+                result = bufferString;
+                conn.disconnect();
+
+            } catch (Exception ex) {
+                Logger.getLogger(WS_Users.class.getName()).log(Level.SEVERE, null, ex);
             }
             
-            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            
-            String line;
-            
-            while ((line = br.readLine()) != null) {
-                result += line;
-            }
-            
-            conn.disconnect();
-            
-        } catch (Exception ex) {
+        } catch (ParseException ex) {
             Logger.getLogger(WS_Users.class.getName()).log(Level.SEVERE, null, ex);
         }
         

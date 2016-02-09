@@ -61,6 +61,10 @@ public class UserControl {
             }
         }
         
+        if(encodedPublicKey == null) {
+            return null;
+        }
+        
         // Generate Public Key
         KeyFactory keyFactory = KeyFactory.getInstance(algo);
         X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(encodedPublicKey);
