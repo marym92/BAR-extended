@@ -29,7 +29,7 @@ import javax.ws.rs.core.MediaType;
 @Path("gr.unipi.webdev.bar.entities.barcaptcha")
 public class BARcaptchaFacadeREST extends AbstractFacade<BARcaptcha> {
 
-    private static final int MAXCAPTCHA = 9;
+    private static final int MAXCAPTCHA = 1000;
     
     @PersistenceContext(unitName = "BAR_RestWSPU")
     private EntityManager em;
@@ -96,7 +96,7 @@ public class BARcaptchaFacadeREST extends AbstractFacade<BARcaptcha> {
         Random rnd = new Random(System.nanoTime());
         
         // Create a new Captcha object
-        c.setCID(rnd.nextInt(MAXCAPTCHA) + 1);
+        c.setCID(rnd.nextInt(MAXCAPTCHA));
         c.setCaptcha(find(c.getCID()).getCaptcha());
         
         return c;

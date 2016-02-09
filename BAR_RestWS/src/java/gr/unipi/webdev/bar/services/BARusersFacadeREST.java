@@ -192,7 +192,7 @@ public class BARusersFacadeREST extends AbstractFacade<BARusers> {
     public String register(SignupData sd) throws Exception {
         String result = "-1";
         
-        if (sd.username==null || sd.password==null || sd.passwordVer==null || sd.email==null || sd.birthdate==null || sd.cID==0 || sd.captcha==null) {
+        if (sd.username==null || sd.password==null || sd.passwordVer==null || sd.email==null || sd.birthdate==null || sd.cID==null || sd.captcha==null) {
             result = "-208";
             return result;
         }
@@ -208,7 +208,7 @@ public class BARusersFacadeREST extends AbstractFacade<BARusers> {
             return result;
         }
         
-        BARcaptcha captcha = new BARcaptcha(sd.cID, sd.captcha);
+        BARcaptcha captcha = new BARcaptcha(Integer.parseInt(sd.cID), sd.captcha);
         if (!checkCaptcha(captcha)) {
             result = "-207";
             return result;
