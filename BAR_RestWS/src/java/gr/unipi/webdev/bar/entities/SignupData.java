@@ -25,6 +25,8 @@ public class SignupData {
     public String email;
     @XmlElement(name="birthdate")
     public String birthdate;
+    @XmlElement(name="cID")
+    public int cID;
     @XmlElement(name="captcha")
-    public BARcaptcha captcha;
+    public String captcha;
 }

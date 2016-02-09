@@ -40,12 +40,7 @@ import javax.xml.bind.DatatypeConverter;
 @Stateless
 @Path("gr.unipi.webdev.bar.entities.barusers")
 public class BARusersFacadeREST extends AbstractFacade<BARusers> {
-
-    @EJB
-    private BARloginAttemptsFacadeREST laFacadeREST;
-    private BARactiveUsersFacadeREST auFacadeREST;
-    private BARcaptchaFacadeREST cFacadeREST;
-    
+ 
     @PersistenceContext(unitName = "BAR_RestWSPU")
     private EntityManager em;
 
@@ -101,16 +96,19 @@ public class BARusersFacadeREST extends AbstractFacade<BARusers> {
         return String.valueOf(super.count());
     }
     
+    @EJB
+    private BARloginAttemptsFacadeREST laFacadeREST;
+    
     @POST
     @Path("/login")
     @Produces({MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_JSON})
     public String login(LoginData ld) throws Exception {
         String result = "-1";
-        
+    
         // Check username existence
         BARusers user = findByUsername(ld.username);
-        
+    
         if (user == null) {
             result = "-105"; // username not exist
             return result;
@@ -139,23 +137,7 @@ public class BARusersFacadeREST extends AbstractFacade<BARusers> {
                 laFacadeREST.edit(user.getUserID(), new BARloginAttempts(user.getUserID(), 0));
             }
             
-            List<BARactiveUsers> activeList = auFacadeREST.findAll();
-            
-            // Chooses a random userBarID, not in use
-            Random rnd = new Random(System.nanoTime());
-            int userBarId;
-            
-            /**
-             * At this point, coordinator will check if systemNo and clusterNo exist, based on
-             * system parameters. Then, coordinator choose a random userBarId that is available
-             * on given serverNo.
-            */
-            do {
-                userBarId = rnd.nextInt(999999) + 1;
-            } while (auFacadeREST.getActiveUserBarId().contains(userBarId));
-            
-            // Add user to Active Users
-            auFacadeREST.create(new BARactiveUsers(userBarId, ld.ip, ld.bridgedPk));
+            addToActiveUsers(ld.ip, ld.bridgedPk);
             
             result = "0"; // success
             return result;
@@ -176,12 +158,44 @@ public class BARusersFacadeREST extends AbstractFacade<BARusers> {
         return result;
     }
     
+    @EJB
+    private BARactiveUsersFacadeREST auFacadeREST;
+    
+    private void addToActiveUsers(String ip, String bridgedPk) {
+        
+        List<BARactiveUsers> activeList = auFacadeREST.findAll();
+            
+        // Chooses a random userBarID, not in use
+        Random rnd = new Random(System.nanoTime());
+        int userBarId;
+
+        /**
+         * At this point, coordinator will check if systemNo and clusterNo exist, based on
+         * system parameters. Then, coordinator choose a random userBarId that is available
+         * on given serverNo.
+        */
+        do {
+            userBarId = rnd.nextInt(999999) + 1;
+        } while (auFacadeREST.getActiveUserBarId().contains(userBarId));
+
+        // Add user to Active Users
+        auFacadeREST.create(new BARactiveUsers(userBarId, ip, bridgedPk));
+    }
+    
+    @EJB
+    private BARcaptchaFacadeREST cFacadeREST;
+    
     @POST
     @Path("/register")
     @Produces({MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_JSON})
     public String register(SignupData sd) throws Exception {
         String result = "-1";
+        
+        if (sd.username==null || sd.password==null || sd.passwordVer==null || sd.email==null || sd.birthdate==null || sd.cID==0 || sd.captcha==null) {
+            result = "-208";
+            return result;
+        }
         
         // Check if password match
         if (!sd.password.equals(sd.passwordVer)) {
@@ -194,7 +208,8 @@ public class BARusersFacadeREST extends AbstractFacade<BARusers> {
             return result;
         }
         
-        if (!checkCaptcha(sd.captcha)) {
+        BARcaptcha captcha = new BARcaptcha(sd.cID, sd.captcha);
+        if (!checkCaptcha(captcha)) {
             result = "-207";
             return result;
         }
