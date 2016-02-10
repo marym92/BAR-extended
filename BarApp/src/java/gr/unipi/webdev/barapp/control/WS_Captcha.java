@@ -30,7 +30,7 @@ public class WS_Captcha {
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept", "application/json");
             
-            if (conn.getResponseCode() != 200) {
+            if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) {
                 throw new RuntimeException("Failed: HTTP error code : " + conn.getResponseCode()); 
             }
             

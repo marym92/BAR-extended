@@ -3,6 +3,7 @@
     Author     : mary
 --%>
 
+<%@page import="gr.unipi.webdev.barapp.db.DBinfo"%>
 <%@page import="gr.unipi.webdev.barapp.entities.LoginData"%>
 <%@page import="gr.unipi.webdev.barapp.control.WS_Users"%>
 <%@page import="gr.unipi.webdev.barapp.security.RSAkeys"%>
@@ -27,7 +28,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
     
-    <% if (session.getAttribute("account") == null) { %>
+    <% if (session.getAttribute("loggedin") == null) { %>
     
         <script type="text/javascript" src="imports/import_header.js"></script>
 
@@ -106,24 +107,32 @@
 
                                     String result = WS_Users.login(ld);
 
-                                    if (result.equals("0")) {
-                                        response.sendRedirect("account.jsp");
-                                    } 
-                                    else if (result.equals("-102")) { %>
+                                    if (result.equals("")) { %>
                                         <script language="javascript">
                                             alert("There was a problem contacting server. Please try again later!");
                                         </script>
                                     <%
-                                    } else if (result.equals("-105")) { %>
-                                        <script language="javascript">
-                                            alert("Username and/or Password is incorrect.\nPlease check your credentials and try again!");
-                                        </script>
-                                    <%
-                                    } else if (result.equals("-101")) { %>
-                                        <script language="javascript">
-                                            alert("Due to many failed login attempts, your account is locked. Please recover your password and try again!");
-                                        </script>
-                                    <% }
+                                    } else {
+                                        if (Integer.parseInt(result) > 0) {
+                                            DBinfo.dbBarIDInsert(Integer.parseInt(result));
+                                            response.sendRedirect("signup-bar.jsp");
+                                        } 
+                                        else if (result.equals("-102")) { %>
+                                            <script language="javascript">
+                                                alert("There was a problem contacting server. Please try again later!");
+                                            </script>
+                                        <%
+                                        } else if (result.equals("-105")) { %>
+                                            <script language="javascript">
+                                                alert("Username and/or Password is incorrect.\nPlease check your credentials and try again!");
+                                            </script>
+                                        <%
+                                        } else if (result.equals("-101")) { %>
+                                            <script language="javascript">
+                                                alert("Due to many failed login attempts, your account is locked. Please recover your password and try again!");
+                                            </script>
+                                        <% }
+                                    }
                                 }
                             }
                             else { %>

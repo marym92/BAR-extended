@@ -7,7 +7,10 @@ package gr.unipi.webdev.barapp.db;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -20,6 +23,7 @@ public class DBinfo {
     
     private static String tableInfo = "BAR_UserInfo";
     private static String tableTempKeys = "BAR_TempKeys";
+    private static String tableTempBarID = "BAR_TempBarID";
     
     public static void dbConnect() {
         try {
@@ -38,6 +42,9 @@ public class DBinfo {
             sql = "CREATE TABLE IF NOT EXISTS " + tableTempKeys + " " +
                          "(sessionPk         TEXT       NOT NULL   UNIQUE , " + 
                          " sessionSk         TEXT       NOT NULL   UNIQUE);"; 
+            stmt.executeUpdate(sql);
+            sql = "CREATE TABLE IF NOT EXISTS " + tableTempBarID + " " +
+                         "(userBarID         INTEGER    NOT NULL   PRIMARY KEY);"; 
             stmt.executeUpdate(sql);
             
         } catch (Exception e) {
@@ -61,12 +68,26 @@ public class DBinfo {
     
     public static void dbKeysInsert(String sessionPk, String sessionSk) {
         try {
-            // ----------------- Insert Values -----------------
             sql = "DELETE FROM " + tableTempKeys + ";";
             stmt.executeUpdate(sql);
             
             sql = "INSERT INTO " + tableTempKeys + " (sessionPk, sessionSk) VALUES "
                     + "('" + sessionPk + "','" + sessionSk + "');";
+            
+        } catch (Exception e) {
+            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+            System.exit(0);
+        }
+    }
+    
+    public static void dbBarIDInsert(int userBarID) {
+        try {
+            sql = "DELETE FROM " + tableTempBarID + ";";
+            stmt.executeUpdate(sql);
+            
+            sql = "INSERT INTO " + tableTempBarID + " (userBarID) VALUES "
+                    + "(" + userBarID + ");";
+            stmt.executeUpdate(sql);
             
         } catch (Exception e) {
             System.err.println( e.getClass().getName() + ": " + e.getMessage() );
@@ -80,8 +101,10 @@ public class DBinfo {
         try {
             if (table.equals("tableInfo")) {
                 sql = "SELECT * FROM " + tableInfo + ";";
-            } else {
+            } else if (table.equals("tableKeys")) {
                 sql = "SELECT * FROM " + tableTempKeys + ";";
+            } else {
+                sql = "SELECT * FROM " + tableTempBarID + ";";
             }
             
             rs = stmt.executeQuery(sql);
@@ -91,6 +114,19 @@ public class DBinfo {
         }
         
         return rs;
+    }
+    
+    public static void dbDelete() {
+        try {
+            sql = "DELETE FROM " + tableTempBarID + ";";
+            stmt.executeUpdate(sql);
+            
+            sql = "DELETE FROM " + tableTempKeys + ";";
+            stmt.executeUpdate(sql);
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(DBinfo.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     public static void dbClose() {

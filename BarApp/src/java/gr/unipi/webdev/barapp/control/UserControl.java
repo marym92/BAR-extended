@@ -4,10 +4,12 @@
  */ 
 package gr.unipi.webdev.barapp.control;
 
-import static gr.unipi.webdev.barapp.db.DBinfo.dbClose;
-import static gr.unipi.webdev.barapp.db.DBinfo.dbConnect;
-import static gr.unipi.webdev.barapp.db.DBinfo.dbSelect;
+import static gr.unipi.webdev.barapp.db.DBinfo.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.InetAddress;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
@@ -96,6 +98,30 @@ public class UserControl {
         return privateKey;
     }
     
+    public static int setBarID(int userBarID) throws Exception {
+        dbConnect();
+        
+        dbBarIDInsert(userBarID);
+        
+        dbClose();
+        
+        return userBarID;
+    }
+    
+    public static int getBarID() throws Exception {
+        int userBarID = 0;
+        
+        dbConnect();
+        
+        ResultSet rs = dbSelect("tableBarID");
+        while (rs.next()) {
+            userBarID = rs.getInt("userBarID");
+        }
+        dbClose();
+        
+        return userBarID;
+    }
+    
     public static String getIP() {
         InetAddress ip;
         String ipString = "";
@@ -108,5 +134,44 @@ public class UserControl {
         }
         
         return ipString;
+    }
+    
+    public static void logout() throws Exception {
+        int userBarID = getBarID();
+        String result = "";
+        
+        String auURL = "http://83.212.114.35:8080/BAR_RestWS/webresources/gr.unipi.webdev.bar.entities.baractiveusers";
+        try {
+            URL url = new URL(auURL + "/logout/" + userBarID);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("Accept", "application/json");
+            
+            if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                throw new RuntimeException("Failed: HTTP error code : " + conn.getResponseCode()); 
+            }
+            
+            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            
+            String line = "";
+            String bufferString = "";
+
+            while ((line = br.readLine()) != null) {
+                bufferString += line;
+            }
+
+            // convert string to JSONObject
+            result = bufferString;
+            conn.disconnect();
+                    
+        } catch (Exception ex) {
+            Logger.getLogger(WS_SystemParams.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        if (result.equals("0")) {
+            dbConnect();
+            dbDelete();
+            dbClose();
+        }
     }
 }
