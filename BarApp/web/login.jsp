@@ -115,7 +115,7 @@
                                     } else {
                                         if (Integer.parseInt(result) > 0) {
                                             DBinfo.dbBarIDInsert(Integer.parseInt(result));
-                                            response.sendRedirect("signup-bar.jsp");
+                                            response.sendRedirect("services.jsp");
                                         } 
                                         else if (result.equals("-102")) { %>
                                             <script language="javascript">
@@ -179,7 +179,7 @@
             
     <% }
     else {
-        response.sendRedirect("account.jsp");
+        response.sendRedirect("services.jsp");
     } %>
     
 </html>

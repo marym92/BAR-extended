@@ -53,7 +53,7 @@ public class DBmenu {
                     + "('Home', 1, './index.jsp', 0), "
                     + "('About', 2, './about.jsp', 0), "
                     + "('Login', 3, './login.jsp', 2), "
-                    + "('My Account', 4, './account.jsp', 1), "
+                    + "('Services', 4, './services.jsp', 1), "
                     + "('Contact Us', 5, './contact.jsp', 0); ";
             stmt.executeUpdate(sql);
             

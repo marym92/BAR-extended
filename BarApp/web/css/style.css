@@ -136,7 +136,7 @@ img {
 	margin: 0 0 24px;
 	padding: 56px 0 0;
 }
-#contents h1, #featured h3 {
+#contents h1, #featured h3, #services h3 {
 	color: #fbfdfd;
 	font: italic 34px Georgia, "Times New Roman", Times, serif;
 	font-style: italic;
@@ -591,6 +591,42 @@ img {
 	color: #51a9e9;
 }
 #featured li p {
+	color: #07304d;
+	font-size: 12px;
+	text-align: center;
+}
+
+/** services **/
+#services {
+	display: block;
+	list-style: none;
+	width: 960px;
+	margin: 0 auto;
+	padding: 50px 0;
+}
+#services li {
+	float: left;
+	width: 300px;
+	margin: 0 10px;
+	text-align: center;
+}
+#services li img {
+        border: 1px solid grey;
+        box-shadow: 5px 5px 5px #888;
+}
+#services li h3 {
+	color: #07304d;
+	font-size: 18px;
+	margin: 18px 0;
+}
+#services li h3 a {
+	color: #07304d;
+	text-decoration: none;
+}
+#services li h3 a:hover {
+	color: #51a9e9;
+}
+#services li p {
 	color: #07304d;
 	font-size: 12px;
 	text-align: center;

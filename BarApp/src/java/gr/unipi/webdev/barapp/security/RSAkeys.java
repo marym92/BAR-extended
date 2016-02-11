@@ -50,20 +50,20 @@ public class RSAkeys {
         // Create Public Key.
         X509EncodedKeySpec x509EncodedKeySpec = new X509EncodedKeySpec(
                         publicKey.getEncoded());
-        String sessionPk = getHexString(x509EncodedKeySpec.getEncoded());
+        String pk = getHexString(x509EncodedKeySpec.getEncoded());
         
         // Create Private Key.
         PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(
                         privateKey.getEncoded());
-        String sessionSk = getHexString(pkcs8EncodedKeySpec.getEncoded());
+        String sk = getHexString(pkcs8EncodedKeySpec.getEncoded());
         
         // Store Keys to DB
         if (nym.equals("")) {  
             /* Session Keys are created */ 
-            DBinfo.dbKeysInsert(sessionPk, sessionSk);
+            DBinfo.dbKeysInsert(pk, sk);
         } else { 
             /* User's Key Pair are created */ 
-            DBinfo.dbInfoInsert(nym, sessionPk, sessionSk);
+            DBinfo.dbInfoInsert(nym, pk, sk);
         }
     }
     

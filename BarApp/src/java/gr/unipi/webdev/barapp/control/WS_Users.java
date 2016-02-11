@@ -33,6 +33,7 @@ public class WS_Users {
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setDoOutput(true);
             conn.setRequestMethod("POST");
+            conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
             conn.setRequestProperty("Accept", "application/json");
             
             // Create JSON object
@@ -126,7 +127,6 @@ public class WS_Users {
                     bufferString += line;
                 }
                 
-                // convert string to JSONObject
                 result = bufferString;
                 conn.disconnect();
 
@@ -140,4 +140,40 @@ public class WS_Users {
         
         return result;
     }
+    
+    public static String getCoordiKey() {
+        String result = "";
+        
+        try {
+            URL url = new URL(usersURL + "/getCoordiKey");
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("Accept", "application/json");
+            conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+            
+            if (conn.getResponseCode() != 200) {
+                result = "-504";
+                return result;
+            }
+            
+            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            
+            String line;
+            String bufferString = "";
+            
+            while ((line = br.readLine()) != null) {
+                bufferString += line;
+            }
+            
+            result = bufferString;
+            
+            conn.disconnect();
+                    
+        } catch (Exception ex) {
+            Logger.getLogger(WS_SystemParams.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return result;
+    }
+    
 }

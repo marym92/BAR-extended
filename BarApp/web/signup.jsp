@@ -264,6 +264,6 @@
         </body>
     <% }
     else {
-        response.sendRedirect("account.jsp");
+        response.sendRedirect("services.jsp");
     } %>
 </html>
