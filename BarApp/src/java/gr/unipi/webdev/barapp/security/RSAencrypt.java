@@ -4,9 +4,15 @@
  */
 package gr.unipi.webdev.barapp.security;
 
+import gr.unipi.webdev.barapp.db.DBinfo;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
+import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.crypto.Cipher;
@@ -20,11 +26,11 @@ public class RSAencrypt {
     
     private static final String ALGORITHM = "RSA";
     
-    public static PublicKey decryptPk(String encCoordiKey) {
+    public static PublicKey decryptPk(String encPubKey) {
         PublicKey pubKey = null;
         
         try {
-            byte[] encodedPublicKey = DatatypeConverter.parseHexBinary(encCoordiKey);
+            byte[] encodedPublicKey = DatatypeConverter.parseHexBinary(encPubKey);
             
             // Generate Public Key
             KeyFactory keyFactory = KeyFactory.getInstance(ALGORITHM);
@@ -36,6 +42,35 @@ public class RSAencrypt {
         }
         
         return pubKey;
+    }
+    
+    public static PrivateKey decryptSk() {
+        PrivateKey privKey = null;
+            
+        DBinfo.dbConnect();
+
+        ResultSet rs = DBinfo.dbSelect("tableInfo");
+        
+        try {
+            byte[] encodedPrivateKey = null;
+            
+            while (rs.next()) {
+                // Read Private Key.
+                encodedPrivateKey = DatatypeConverter.parseHexBinary(rs.getString(2));
+            }
+            
+            // Generate Private Key
+            KeyFactory keyFactory = KeyFactory.getInstance(ALGORITHM);
+            PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(encodedPrivateKey);
+            privKey = keyFactory.generatePrivate(privateKeySpec);
+            
+        } catch (Exception ex) {
+            Logger.getLogger(RSAencrypt.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        DBinfo.dbClose();
+            
+        return privKey;
     }
    
     public static byte[] RSAenc(String text, PublicKey key) {
@@ -53,5 +88,28 @@ public class RSAencrypt {
         }
         
         return encDataBytes;
+    }
+    
+    public static String[] RSAdec(String text, PrivateKey key) {
+        String decryptedText = "";
+        byte[] decryptedBytes = null;
+        String[] parts = null;
+        
+        try {
+          // get an RSA cipher object and print the provider
+          final Cipher cipher = Cipher.getInstance(ALGORITHM);
+          // encrypt the plain text using the public key
+          cipher.init(Cipher.DECRYPT_MODE, key);
+          decryptedBytes = cipher.doFinal(text.getBytes(StandardCharsets.UTF_8));
+          
+          decryptedText = new String(decryptedBytes, StandardCharsets.UTF_8);
+          
+          parts = decryptedText.split(":");
+          
+        } catch (Exception ex) {
+          Logger.getLogger(RSAencrypt.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return parts;
     }
 }

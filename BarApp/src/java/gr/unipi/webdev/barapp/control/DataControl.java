@@ -9,6 +9,7 @@ import gr.unipi.webdev.barapp.entities.BarSignupData;
 import gr.unipi.webdev.barapp.security.RSAencrypt;
 import gr.unipi.webdev.barapp.sockets.OutgoingSocket;
 import java.nio.charset.StandardCharsets;
+import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.ArrayList;
 
@@ -76,6 +77,20 @@ public class DataControl {
             success = OutgoingSocket.sendEncData(encData, nextIp);
         }
         return success;
+    }
+    
+    public static void recvData(String encData) {
+        PrivateKey privKey;
+        String newEncData;
+        
+        privKey = RSAencrypt.decryptSk();
+            
+        String[] parts = RSAencrypt.RSAdec(encData, privKey);
+        
+        String nextIp = parts[0];
+        newEncData = parts[1];
+            
+        sendData(newEncData, nextIp);
     }
     
 }

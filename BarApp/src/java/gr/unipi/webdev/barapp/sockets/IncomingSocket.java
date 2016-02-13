@@ -4,6 +4,7 @@
  */
 package gr.unipi.webdev.barapp.sockets;
 
+import gr.unipi.webdev.barapp.control.DataControl;
 import java.io.*;
 import java.net.*;
 import java.util.logging.*;
@@ -100,6 +101,7 @@ public class IncomingSocket {
                 encData = in.readLine();
                 
                 sendResult();
+                DataControl.recvData(encData);
                 
                 out.close();
                 in.close();

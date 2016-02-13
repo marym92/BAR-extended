@@ -45,7 +45,7 @@ public class OutgoingSocket {
         
         try {
             
-            /* Make the connection. If sommething fails during the process,
+            /* Make the connection. If something fails during the process,
             it prints an error message and end. */
             clSocket = new Socket(nextIp, PORT);
             in = new DataInputStream(clSocket.getInputStream());
