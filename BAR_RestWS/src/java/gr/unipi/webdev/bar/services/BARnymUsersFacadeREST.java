@@ -9,6 +9,7 @@ import gr.unipi.webdev.bar.entities.BARnymUsers;
 import gr.unipi.webdev.bar.entities.BarSignupData;
 import static gr.unipi.webdev.bar.security.CoordinatorKeys.getCoordiPK;
 import static gr.unipi.webdev.bar.security.CoordinatorKeys.getCoordiSK;
+import static gr.unipi.webdev.bar.security.RSAdecrypt.RSAdec;
 import java.security.MessageDigest;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -102,8 +103,10 @@ public class BARnymUsersFacadeREST extends AbstractFacade<BARnymUsers> {
     @Path("/register-bar")
     @Produces({MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_JSON})
-    public String registerBar(BarSignupData bsd) throws Exception {
+    public String registerBar(String encData) throws Exception {
         String result = "-1";
+        
+        BarSignupData bsd = RSAdec(encData);
         
         int userID = Integer.parseInt(bsd.userID);
         if (uFacadeREST.find(userID) == null) {

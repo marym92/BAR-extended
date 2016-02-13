@@ -137,9 +137,9 @@ public class BARusersFacadeREST extends AbstractFacade<BARusers> {
                 laFacadeREST.edit(user.getUserID(), new BARloginAttempts(user.getUserID(), 0));
             }
             
-            addToActiveUsers(ld.ip, ld.bridgedPk);
+            int userBarId = addToActiveUsers(ld.ip, ld.bridgedPk);
             
-            result = "0"; // success
+            result = "" + userBarId; // success
             return result;
         }
         
@@ -161,8 +161,7 @@ public class BARusersFacadeREST extends AbstractFacade<BARusers> {
     @EJB
     private BARactiveUsersFacadeREST auFacadeREST;
     
-    private void addToActiveUsers(String ip, String bridgedPk) {
-        
+    private int addToActiveUsers(String ip, String bridgedPk) {
         List<BARactiveUsers> activeList = auFacadeREST.findAll();
             
         // Chooses a random userBarID, not in use
@@ -180,6 +179,8 @@ public class BARusersFacadeREST extends AbstractFacade<BARusers> {
 
         // Add user to Active Users
         auFacadeREST.create(new BARactiveUsers(userBarId, ip, bridgedPk));
+        
+        return userBarId;
     }
     
     @EJB

@@ -5,20 +5,44 @@
  */
 package gr.unipi.webdev.bar.entities;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
 /**
  *
  * @author mary
  */
 
-@XmlRootElement
 public class BarSignupData {
-    @XmlElement(name="userID")
     public String userID;
-    @XmlElement(name="pseudonym")
     public String pseudonym;
-    @XmlElement(name="pk")
     public String pk;
+
+    public BarSignupData(String userID, String pseudonym, String pk) {
+        this.userID = userID;
+        this.pseudonym = pseudonym;
+        this.pk = pk;
+    }
+
+    public String getUserID() {
+        return userID;
+    }
+
+    public void setUserID(String userID) {
+        this.userID = userID;
+    }
+
+    public String getPseudonym() {
+        return pseudonym;
+    }
+
+    public void setPseudonym(String pseudonym) {
+        this.pseudonym = pseudonym;
+    }
+
+    public String getPk() {
+        return pk;
+    }
+
+    public void setPk(String pk) {
+        this.pk = pk;
+    }
+    
 }
