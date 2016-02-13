@@ -165,7 +165,7 @@ public class UserControl {
             conn.disconnect();
                     
         } catch (Exception ex) {
-            Logger.getLogger(WS_SystemParams.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(UserControl.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         if (result.equals("0")) {

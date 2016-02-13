@@ -113,42 +113,23 @@
                                             <%
                                             } else {
                                                 /* ----- (h) Onion path routing to send enc{BarSignupData} ----- */
-                                            // CHANGE STRING RESULT TO CALL signup    
-                                                String result="";
+                                                boolean result = DataControl.sendData(encData, rndAU.get(rndAU.size()-1).getIp());
 
-                                                if (result.equals("")) { %>
+                                                if (!result) { %>
                                                     <script language="javascript">
                                                         alert("There was a problem contacting server. Please try again later!");
                                                     </script>
                                                 <%
                                                 } else {
-                                                    if (encCoordiKey.equals("-501")) { %>
-                                                        <script language="javascript">
-                                                            alert("Given pseudonym already exists. Please choose another pseudonym and try again!");
-                                                        </script>
-                                                    <%
-                                                    } else if (encCoordiKey.equals("-502")) { %>
-                                                        <script language="javascript">
-                                                            alert("You are already a registered user in the BAR protocol.");
-                                                        </script>
-                                                    <%
-                                                    } else if (encCoordiKey.equals("-503")) { %>
-                                                        <script language="javascript">
-                                                            alert("Something went wrong during Register process. Please try again!");
-                                                        </script>
-                                                    <%
-                                                    } else if (encCoordiKey.equals("-504")) { %>
-                                                        <script language="javascript">
-                                                            alert("There was a problem contacting server. Please try again later!");
-                                                        </script>
-                                                    <%
-                                                    }
+                                                    // (g) Key Exchange Protocol for newly registered user
+                                                    // --------- !!!!!!!!!!!!!!! ----------
+                                                    response.sendRedirect("login.jsp");
                                                 }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
+                                            } // END if (encData.equals(""))
+                                        } // END if (encData.equals(""))
+                                    } // END if (activeUsers.size() < onionNodes)
+                                } // END if (encCoordiKey.equals(""))
+                            } // END if (!request.getParameter("pseudonym").equalsIgnoreCase("Pseudonym"))
                             else { %>
                                 <script language="javascript">
                                     alert("Pseudonym must be provided.\nPlease try again!");

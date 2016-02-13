@@ -7,6 +7,7 @@ package gr.unipi.webdev.barapp.control;
 import gr.unipi.webdev.barapp.entities.BARactiveUsers;
 import gr.unipi.webdev.barapp.entities.BarSignupData;
 import gr.unipi.webdev.barapp.security.RSAencrypt;
+import gr.unipi.webdev.barapp.sockets.OutgoingSocket;
 import java.nio.charset.StandardCharsets;
 import java.security.PublicKey;
 import java.util.ArrayList;
@@ -59,6 +60,22 @@ public class DataControl {
         }
         
         return encString;
+    }
+    
+    public static boolean sendData(String encData, String nextIp) {
+        boolean success;
+        
+        /* ---------- Checks nextIp ----------
+           if (nextIp = coordi) -> call WS
+           if (nextIp = node) -> OutgoingSocket.sendData()
+        */
+        if (nextIp.equals("coordi")) {
+            success = WS_NymUsers.registerBar(encData);
+        } 
+        else {
+            success = OutgoingSocket.sendEncData(encData, nextIp);
+        }
+        return success;
     }
     
 }
