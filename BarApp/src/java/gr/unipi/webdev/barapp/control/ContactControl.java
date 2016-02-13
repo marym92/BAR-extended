@@ -106,6 +106,10 @@ public class ContactControl {
             /* ----- (c6) Onion path routing to send enc{KeyExchangeData} ----- */
             success = DataControl.sendData(encData, rndAU.get(rndAU.size()-1).getIp());
 
+            if (success) {
+                /* ----- (c7) If success, add contact to db ----- */
+                DBcontacts.dbContactInsert(u.getPseudonym(), u.getPk(), sharedKey, label, null);
+            }
         }
         
         return success;
