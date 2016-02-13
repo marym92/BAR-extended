@@ -4,13 +4,16 @@
  */ 
 package gr.unipi.webdev.barapp.control;
 
+import gr.unipi.webdev.barapp.entities.BARnymUsers;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
@@ -72,4 +75,51 @@ public class WS_NymUsers {
         
         return success;
     }
+    
+    public static ArrayList<BARnymUsers> getNymUsers() {
+        ArrayList<BARnymUsers> nu = new ArrayList<>();
+        
+        try {
+            URL url = new URL(nymUsersURL + "/getNymUsers");
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("Accept", "application/json");
+            
+            if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                throw new RuntimeException("Failed: HTTP error code : " + conn.getResponseCode()); 
+            }
+            
+            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            
+            String line;
+            String bufferString = "";
+            
+            while ((line = br.readLine()) != null) {
+                bufferString += line;
+            }
+            
+            // convert string to JSONArray
+            JSONArray jsonArray = new JSONArray(bufferString);
+            int arrayNum = jsonArray.length();
+            
+            // JSONArray to ArrayList
+            for (int i=0; i<arrayNum; i++) {
+                JSONObject jsonParam = jsonArray.getJSONObject(i);
+                
+                BARnymUsers nymUser = new BARnymUsers();
+                nymUser.setPseudonym(jsonParam.getString("pseudonym"));
+                nymUser.setPk(jsonParam.getString("pk"));
+                
+                nu.add(nymUser);
+            }
+            
+            conn.disconnect();
+                    
+        } catch (Exception ex) {
+            Logger.getLogger(WS_SystemParams.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return nu;
+    }
+    
 }

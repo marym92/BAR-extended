@@ -26,7 +26,7 @@ public class DataControl {
     * In the future, this function will call AESencrypt.AESenc
     * before RSAencrypt.RSAenc(encString, coordiPubKey)
     */
-    public static String encryptDataToCoordi(String encCoordiKey, BarSignupData bsd) {
+    public static String encryptBarDataToCoordi(String encCoordiKey, BarSignupData bsd) {
         String encString = "";
         
         PublicKey coordiPubKey = RSAencrypt.decryptPk(encCoordiKey);
@@ -39,7 +39,18 @@ public class DataControl {
         return encString;
     }
     
-    public static String encryptDataToAU(ArrayList<BARactiveUsers> rndAU, String encString) {
+    public static String encryptDataToCoordi(String encCoordiKey, String data) {
+        String encString = "";
+        
+        PublicKey coordiPubKey = RSAencrypt.decryptPk(encCoordiKey);
+        
+        byte[] encData = RSAencrypt.RSAenc(data, coordiPubKey);
+        encString = new String(encData, StandardCharsets.UTF_8);
+        
+        return encString;
+    }
+    
+    public static String encryptDataToAU(boolean register, ArrayList<BARactiveUsers> rndAU, String encString) {
         
         PublicKey pubKey;
         byte[] encData;
@@ -47,7 +58,11 @@ public class DataControl {
         for (int node=0; node<onionNodes; node++) {
             
             if (node == endNode) {
-                encString = "coordi:" + encString;
+                if (register) {
+                    encString = "coordi:" + encString;
+                } else {
+                    encString = "coordiKeyExchange:" + encString;
+                }
             }
             else {
                 encString = rndAU.get(node-1).getIp() + ":" + encString;
@@ -67,12 +82,16 @@ public class DataControl {
         boolean success;
         
         /* ---------- Checks nextIp ----------
-           if (nextIp = coordi) -> call WS
+           if (nextIp = coordi) -> call WS /register-bar
+           if (nextIp = coordiKeyExchange) -> call WS /addToContacts
            if (nextIp = node) -> OutgoingSocket.sendData()
         */
         if (nextIp.equals("coordi")) {
             success = WS_NymUsers.registerBar(encData);
         } 
+        else if (nextIp.equals("coordiKeyExchange")) {
+            success = WS_Contacts.addToContacts(encData);
+        }
         else {
             success = OutgoingSocket.sendEncData(encData, nextIp);
         }
@@ -83,9 +102,9 @@ public class DataControl {
         PrivateKey privKey;
         String newEncData;
         
-        privKey = RSAencrypt.decryptSk();
+        privKey = RSAencrypt.decryptOwnSk();
             
-        String[] parts = RSAencrypt.RSAdec(encData, privKey);
+        String[] parts = RSAencrypt.RSAdec(true, encData, privKey);
         
         String nextIp = parts[0];
         newEncData = parts[1];

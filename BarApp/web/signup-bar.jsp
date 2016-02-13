@@ -3,6 +3,7 @@
     Author     : mary
 --%>
 
+<%@page import="gr.unipi.webdev.barapp.control.ContactControl"%>
 <%@page import="gr.unipi.webdev.barapp.control.DataControl"%>
 <%@page import="gr.unipi.webdev.barapp.control.WS_ActiveUsers"%>
 <%@page import="java.util.ArrayList"%>
@@ -96,7 +97,7 @@
                                         ArrayList<BARactiveUsers> rndAU = WS_ActiveUsers.getRndActiveUsers(activeUsers);
                                         
                                         /* ----- (f) Encrypt data with Coordi PK ----- */
-                                        String encData = DataControl.encryptDataToCoordi(encCoordiKey, bsd);
+                                        String encData = DataControl.encryptBarDataToCoordi(encCoordiKey, bsd);
                                         if (encData.equals("")) { %>
                                             <script language="javascript">
                                                 alert("There was a problem contacting server. Please try again later!");
@@ -104,7 +105,7 @@
                                         <%
                                         } else {
                                             /* ----- (g) Encrypt data with each of the 3 random users' PKs ----- */
-                                            encData = DataControl.encryptDataToAU(rndAU, encData);
+                                            encData = DataControl.encryptDataToAU(true, rndAU, encData);
                                                 
                                             if (encData.equals("")) { %>
                                                 <script language="javascript">
@@ -122,9 +123,16 @@
                                                 <%
                                                 } else {
                                                     // (g) Key Exchange Protocol for newly registered user
-                                                    // --------- !!!!!!!!!!!!!!! ----------
-                                                    response.sendRedirect("login.jsp");
-                                                }
+                                                    boolean success = ContactControl.keyExchangeProtocol_send(request.getParameter("pseudonym"));
+                                                    if (success) {
+                                                        response.sendRedirect("login.jsp");
+                                                    } else { %>
+                                                        <script language="javascript">
+                                                            alert("There was a problem during Key Exchange process. Please try again later!");
+                                                        </script>
+                                                    <%
+                                                    }
+                                                } // END if !(DataControl.sendData(encData, rndAU.get(rndAU.size()-1).getIp()))
                                             } // END if (encData.equals(""))
                                         } // END if (encData.equals(""))
                                     } // END if (activeUsers.size() < onionNodes)

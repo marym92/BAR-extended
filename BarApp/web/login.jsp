@@ -3,6 +3,7 @@
     Author     : mary
 --%>
 
+<%@page import="gr.unipi.webdev.barapp.control.ContactControl"%>
 <%@page import="gr.unipi.webdev.barapp.db.DBinfo"%>
 <%@page import="gr.unipi.webdev.barapp.entities.LoginData"%>
 <%@page import="gr.unipi.webdev.barapp.control.WS_Users"%>
@@ -114,8 +115,17 @@
                                     <%
                                     } else {
                                         if (Integer.parseInt(result) > 0) {
-                                            DBinfo.dbBarIDInsert(Integer.parseInt(result));
-                                            response.sendRedirect("services.jsp");
+                                            // (e) Key Exchange Protocol for logged in user
+                                            boolean success = ContactControl.keyExchangeProtocol_recv(nym);
+                                            if (success) {
+                                                DBinfo.dbBarIDInsert(Integer.parseInt(result));
+                                                response.sendRedirect("services.jsp");
+                                            } else { %>
+                                                <script language="javascript">
+                                                    alert("There was a problem during Key Exchange process. Please try again later!");
+                                                </script>
+                                            <%
+                                            }
                                         } 
                                         else if (result.equals("-102")) { %>
                                             <script language="javascript">
