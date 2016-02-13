@@ -5,17 +5,19 @@
  */
 package gr.unipi.webdev.bar.entities;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
 /**
  *
  * @author mary
  */
-@XmlRootElement
 public class ContactsPairingData {
-    @XmlElement(name="pseudonym")
     public String pseudonym;
-    @XmlElement(name="data")
     public String data;
+
+    public ContactsPairingData() {
+    }
+    
+    public ContactsPairingData(String pseudonym, String data) {
+        this.pseudonym = pseudonym;
+        this.data = data;
+    }
 }

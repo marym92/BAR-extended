@@ -9,6 +9,8 @@ import gr.unipi.webdev.bar.entities.BARcontacts;
 import gr.unipi.webdev.bar.entities.BARcontactsPK;
 import gr.unipi.webdev.bar.entities.BARnymUsers;
 import gr.unipi.webdev.bar.entities.ContactsPairingData;
+import gr.unipi.webdev.bar.security.RSAdecrypt;
+import static gr.unipi.webdev.bar.security.RSAdecrypt.RSAdecContacts;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -127,8 +129,10 @@ public class BARcontactsFacadeREST extends AbstractFacade<BARcontacts> {
     @Path("/addToContacts")
     @Produces({MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_JSON})
-    public String addToContacts(ContactsPairingData cpd) throws Exception {
+    public String addToContacts(String encData) throws Exception {
         String result = "-1";
+        
+        ContactsPairingData cpd = RSAdecContacts(encData);
         
         List<BARnymUsers> nymusers = nuFacadeREST.findAll();
 

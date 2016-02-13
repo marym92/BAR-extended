@@ -7,14 +7,17 @@ package gr.unipi.webdev.bar.services;
 
 import gr.unipi.webdev.bar.entities.BARnymUsers;
 import gr.unipi.webdev.bar.entities.BarSignupData;
+import gr.unipi.webdev.bar.entities.SentNymUsers;
 import static gr.unipi.webdev.bar.security.CoordinatorKeys.getCoordiPK;
 import static gr.unipi.webdev.bar.security.CoordinatorKeys.getCoordiSK;
-import static gr.unipi.webdev.bar.security.RSAdecrypt.RSAdec;
+import gr.unipi.webdev.bar.security.RSAdecrypt;
+import static gr.unipi.webdev.bar.security.RSAdecrypt.RSAdecSignup;
 import java.security.MessageDigest;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.Signature;
+import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -29,7 +32,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.xml.bind.DatatypeConverter;
 
 /**
  *
@@ -106,7 +108,7 @@ public class BARnymUsersFacadeREST extends AbstractFacade<BARnymUsers> {
     public String registerBar(String encData) throws Exception {
         String result = "-1";
         
-        BarSignupData bsd = RSAdec(encData);
+        BarSignupData bsd = RSAdecSignup(encData);
         
         int userID = Integer.parseInt(bsd.userID);
         if (uFacadeREST.find(userID) == null) {
@@ -175,6 +177,22 @@ public class BARnymUsersFacadeREST extends AbstractFacade<BARnymUsers> {
         
         result = "0";
         return result;
+    }
+    
+    @GET
+    @Path("/getNymUsers")
+    @Produces({"application/json"})
+    public List<SentNymUsers> getNymUsers() {
+        List<BARnymUsers> allbnu = super.findAll();
+        List<SentNymUsers> allnymusers = new ArrayList<>();
+        
+        for (BARnymUsers nu: allbnu) {
+            SentNymUsers snu = new SentNymUsers(nu.getPseudonym(), nu.getPk());
+            // SentNymUsers snu = new SentNymUsers(nu.getPseudonym(), nu.getPk(), nu.getSig());
+            allnymusers.add(snu);
+        }
+        
+        return allnymusers;
     }
 
     @Override
